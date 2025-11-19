@@ -13,8 +13,13 @@ List of all current Gestures
 
 Operators:
 addition: touch just index fingers together
+
 multiplication: cross symbol with index fingers
-subtraction: pinch gesture
+
+subtraction: pinch gesture/ ok symbol
+
 division: "slash" made with either hand
+
 equals: thumbs up either hand
+
 clear: make a "C" with either hand
