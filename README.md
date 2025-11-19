@@ -42,12 +42,12 @@ Why: Simple, intuitive, instantly learnable by any calculator user.
 
 2. Core Gesture Set (Operators + Actions)
 Action	Gesture	Rationale
-Add (+)	Both hands open (5+5) for >0.5s	High visibility / minimal false positives
+Add (+)	Touch both index fingers
 Subtract (–)	Left-hand pinch (thumb + index)	“Taking away” motion
 Multiply (×)	Both index fingers forming an “X” shape	Matches symbol conceptually
-Divide (÷)	Right-hand pinch	Mirror of subtract gesture, easy to differentiate
+Divide (÷)	Slash Gesture
 Equals (=)	Thumbs-up	Natural confirmation gesture
-Clear (C)	Both hands in fists	Universal reset motion
+Clear (C)	Swipe left
 
 These gestures are chosen for clarity, distinctness, and easy reproducibility for first-time users.
 
