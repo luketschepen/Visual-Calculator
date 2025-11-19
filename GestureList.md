@@ -23,4 +23,6 @@ division: "slash" made with either hand
 
 equals: thumbs up either hand
 
+backspace: gun symbol with either hand
+
 clear: make a "C" with either hand
