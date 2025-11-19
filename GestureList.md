@@ -13,6 +13,7 @@ List of all current Gestures
 
 Operators:
 addition: touch just index fingers together
+![Uploading image.png…]()
 
 multiplication: cross symbol with index fingers
 
