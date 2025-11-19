@@ -1,6 +1,6 @@
 List of all current Gestures
 
-0: 0 symbol
+0: 0 symbol with either hand
 1: any 1 figer
 2: any 2 fingers
 3: any 3 fingers
