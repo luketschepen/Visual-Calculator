@@ -25,6 +25,21 @@ def count_fingers(hand_landmarks, handedness):
 
     return fingers
 
+def is_pinch(hand_landmarks, threshold=0.06):
+    thumb_tip = hand_landmarks.landmark[4]
+    index_tip = hand_landmarks.landmark[8]
+    distance = ((thumb_tip.x - index_tip.x)**2 + (thumb_tip.y - index_tip.y)**2)**0.5
+    return distance < threshold
+
+def is_thumb_zero(hand_landmarks, threshold=0.08):
+    thumb_tip = hand_landmarks.landmark[4]
+    clustered = 0
+    for tip_id in FINGER_TIPS[1:]:
+        finger_tip = hand_landmarks.landmark[tip_id]
+        distance = ((thumb_tip.x - finger_tip.x)**2 + (thumb_tip.y - finger_tip.y)**2)**0.5
+        if distance < threshold:
+            clustered += 1
+    return clustered == len(FINGER_TIPS[1:])
 
 cap = cv2.VideoCapture(0)
 
@@ -37,6 +52,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
 
         left_count = 0
         right_count = 0
+        pinch_detected = False
+        zero_detected = False
 
         if results.multi_hand_landmarks and results.multi_handedness:
             for lm, hand_type in zip(results.multi_hand_landmarks,
@@ -51,9 +68,21 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 else:
                     right_count = count
 
-        number = left_count + right_count
+                if is_pinch(lm):
+                    pinch_detected = True
 
-        cv2.putText(frame, f"Number: {number}", (10,60),
+                if is_thumb_zero(lm):
+                    zero_detected = True
+
+        if zero_detected:
+            display_text = "Number: zero"
+        elif pinch_detected:
+            display_text = "Number: pinch"
+        else:
+            number = left_count + right_count
+            display_text = f"Number: {number}"
+
+        cv2.putText(frame, display_text, (10,60),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3)
 
         cv2.imshow("Number Detection", frame)
