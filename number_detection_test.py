@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import math
 
 mp_hands = mp.solutions.hands
 mp_draw = mp.solutions.drawing_utils
@@ -40,6 +41,7 @@ def is_thumb_zero(hand_landmarks, threshold=0.08):
         if distance < threshold:
             clustered += 1
     return clustered == len(FINGER_TIPS[1:])
+
 
 cap = cv2.VideoCapture(0)
 
