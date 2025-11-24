@@ -1,4 +1,4 @@
-List of all current Gestures
+## List of all current Gestures
 
 0: 0 symbol with either hand<br>
 1: any 1 finger<br>
