@@ -58,6 +58,36 @@ def index_tip_touch(lm_left, lm_right, threshold=0.05):
     distance = ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
     return distance < threshold
 
+def thumbs_up(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1):
+    pinky_tip = hand_landmarks.landmark[20]
+    palm_pinky_base = hand_landmarks.landmark[17]
+    thumb_tip = hand_landmarks.landmark[4]
+    thumb_base = hand_landmarks.landmark[2]
+
+    # Pinky curled: close distance between tip and base
+    pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
+    
+    # Thumb extended up: tip and base apart, and tip above base (lower y)
+    thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
+    thumb_up = thumb_tip.y < thumb_base.y
+    
+    return pinky_curled and thumb_extended and thumb_up
+
+def thumbs_down(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1):
+    pinky_tip = hand_landmarks.landmark[20]
+    palm_pinky_base = hand_landmarks.landmark[17]
+    thumb_tip = hand_landmarks.landmark[4]
+    thumb_base = hand_landmarks.landmark[2]
+
+    # Pinky curled: close distance between tip and base (same as thumbs up)
+    pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
+    
+    # Thumb extended down: tip and base apart, and tip below base (higher y)
+    thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
+    thumb_down = thumb_tip.y > thumb_base.y
+    
+    return pinky_curled and thumb_extended and thumb_down
+
 cap = cv2.VideoCapture(0)
 
 with mp_hands.Hands(max_num_hands=2) as hands:
@@ -73,6 +103,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         zero_detected = False
         index_mid_touch_detected = False
         index_tip_touch_detected = False
+        thumbs_up_detected = False
+        thumbs_down_detected = False
 
         lm_left = None
         lm_right = None # Pre-initialize left and right hand landmarks
@@ -98,6 +130,12 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 if is_thumb_zero(lm):
                     zero_detected = True
 
+                if thumbs_up(lm):
+                    thumbs_up_detected = True
+
+                if thumbs_down(lm):
+                    thumbs_down_detected = True
+
         if lm_left and lm_right:
             if index_mid_touch(lm_left, lm_right):
                 index_mid_touch_detected = True
@@ -111,6 +149,10 @@ with mp_hands.Hands(max_num_hands=2) as hands:
             display_text = "Number: multiply"
         elif index_tip_touch_detected:
             display_text = "Number: add"
+        elif thumbs_up_detected:
+            display_text = "Number: thumbs up"
+        elif thumbs_down_detected:
+            display_text = "Number: thumbs down"
         else:
             number = left_count + right_count
             display_text = f"Number: {number}"
