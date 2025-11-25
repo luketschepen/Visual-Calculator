@@ -12,8 +12,7 @@
 9: any 9 fingers<br>
 
 Operators:<br>
-addition: touch just index fingers together
-
+addition: touch index finger tips together :white_check_mark:
 
 multiplication: cross symbol with index fingers
 
