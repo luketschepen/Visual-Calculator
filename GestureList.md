@@ -10,6 +10,7 @@
 7: any 7 fingers<br>
 8: any 8 fingers<br>
 9: any 9 fingers<br>
+10: all 10 fingers<br>
 
 Operators:<br>
 :white_check_mark: addition: touch index finger tips together 
