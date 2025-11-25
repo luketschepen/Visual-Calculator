@@ -41,7 +41,14 @@ def is_thumb_zero(hand_landmarks, threshold=0.08):
         if distance < threshold:
             clustered += 1
     return clustered == len(FINGER_TIPS[1:])
-
+    
+def index_mid_touch(lm_left, lm_right, threshold=0.05):
+    # Gesture for Addition: Make a plus sign with your index fingers
+    # Landmark 7 is the middle vertex of the index finger
+    p1 = lm_left.landmark[7]
+    p2 = lm_right.landmark[7]
+    distance = ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
+    return distance < threshold
 
 cap = cv2.VideoCapture(0)
 
@@ -56,6 +63,10 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         right_count = 0
         pinch_detected = False
         zero_detected = False
+        index_touch_detected = False
+
+        lm_left = None
+        lm_right = None # Pre-initialize left and right hand landmarks
 
         if results.multi_hand_landmarks and results.multi_handedness:
             for lm, hand_type in zip(results.multi_hand_landmarks,
@@ -67,8 +78,10 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 count = count_fingers(lm, label)
                 if label == "Left":
                     left_count = count
+                    lm_left = lm
                 else:
                     right_count = count
+                    lm_right = lm
 
                 if is_pinch(lm):
                     pinch_detected = True
@@ -76,10 +89,15 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 if is_thumb_zero(lm):
                     zero_detected = True
 
+        if lm_left and lm_right:
+            if index_mid_touch(lm_left, lm_right):
+                index_touch_detected = True        
         if zero_detected:
             display_text = "Number: zero"
         elif pinch_detected:
             display_text = "Number: pinch"
+        elif index_touch_detected:
+            display_text = "Number: plus"
         else:
             number = left_count + right_count
             display_text = f"Number: {number}"
