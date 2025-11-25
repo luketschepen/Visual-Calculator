@@ -43,10 +43,18 @@ def is_thumb_zero(hand_landmarks, threshold=0.08):
     return clustered == len(FINGER_TIPS[1:])
     
 def index_mid_touch(lm_left, lm_right, threshold=0.05):
-    # Gesture for Addition: Make a plus sign with your index fingers
+    # Gesture for Multiplication: Cross your index fingers
     # Landmark 7 is the middle vertex of the index finger
     p1 = lm_left.landmark[7]
     p2 = lm_right.landmark[7]
+    distance = ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
+    return distance < threshold
+
+def index_tip_touch(lm_left, lm_right, threshold=0.05):
+    # Gesture for Addition: Touch your index finger tips together
+    # Landmark 8 is the tip of the index finger
+    p1 = lm_left.landmark[8]
+    p2 = lm_right.landmark[8]
     distance = ((p1.x - p2.x)**2 + (p1.y - p2.y)**2)**0.5
     return distance < threshold
 
@@ -63,7 +71,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         right_count = 0
         pinch_detected = False
         zero_detected = False
-        index_touch_detected = False
+        index_mid_touch_detected = False
+        index_tip_touch_detected = False
 
         lm_left = None
         lm_right = None # Pre-initialize left and right hand landmarks
@@ -91,13 +100,17 @@ with mp_hands.Hands(max_num_hands=2) as hands:
 
         if lm_left and lm_right:
             if index_mid_touch(lm_left, lm_right):
-                index_touch_detected = True        
+                index_mid_touch_detected = True
+            if index_tip_touch(lm_left, lm_right):
+                index_tip_touch_detected = True    
         if zero_detected:
             display_text = "Number: zero"
         elif pinch_detected:
             display_text = "Number: pinch"
-        elif index_touch_detected:
-            display_text = "Number: plus"
+        elif index_mid_touch_detected:
+            display_text = "Number: multiply"
+        elif index_tip_touch_detected:
+            display_text = "Number: add"
         else:
             number = left_count + right_count
             display_text = f"Number: {number}"
