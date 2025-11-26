@@ -10,19 +10,23 @@
 7: any 7 fingers<br>
 8: any 8 fingers<br>
 9: any 9 fingers<br>
+10: all 10 fingers<br>
 
-Operators:<br>
-addition: touch just index fingers together
+### Operators:<br>
+:white_check_mark: addition: touch index finger tips together 
 
+:white_check_mark: multiplication: cross symbol with index fingers
 
-multiplication: cross symbol with index fingers
-
-subtraction: pinch gesture/ ok symbol
+:white_check_mark: subtraction: pinch gesture/ ok symbol
 
 division: "slash" made with either hand
 
-equals: thumbs up either hand
+:white_check_mark: equals: thumbs up either hand
 
-backspace: gun symbol with either hand
+:white_check_mark: backspace: gun symbol with either hand
 
 clear: make a "C" with either hand
+
+Unused:<br>
+:white_check_mark: Thumbs Down
+
