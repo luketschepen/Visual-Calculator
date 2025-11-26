@@ -12,7 +12,7 @@
 9: any 9 fingers<br>
 10: all 10 fingers<br>
 
-Operators:<br>
+### Operators:<br>
 :white_check_mark: addition: touch index finger tips together 
 
 :white_check_mark: multiplication: cross symbol with index fingers
@@ -26,3 +26,7 @@ division: "slash" made with either hand
 :white_check_mark: backspace: gun symbol with either hand
 
 clear: make a "C" with either hand
+
+Unused:<br>
+:white_check_mark: Thumbs Down
+
