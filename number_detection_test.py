@@ -88,7 +88,7 @@ def thumbs_down(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1)
     
     return pinky_curled and thumb_extended and thumb_down
 
-def backspace(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1, threshold=0.05):
+def backspace(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1, threshold=0.08):
     pinky_tip = hand_landmarks.landmark[20]
     palm_pinky_base = hand_landmarks.landmark[17]
     thumb_tip = hand_landmarks.landmark[4]
@@ -106,6 +106,25 @@ def backspace(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1, t
     index_extended = ((index_tip.x - index_base.x)**2 + (index_tip.y - index_base.y)**2)**0.5 > threshold
     
     return pinky_curled and thumb_extended and thumb_up and index_extended
+
+def backspace_upsidedown(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1, threshold=0.08):
+    pinky_tip = hand_landmarks.landmark[20]
+    palm_pinky_base = hand_landmarks.landmark[17]
+    thumb_tip = hand_landmarks.landmark[4]
+    thumb_base = hand_landmarks.landmark[2]
+    index_tip = hand_landmarks.landmark[8]
+    index_base = hand_landmarks.landmark[5]
+
+    # Pinky curled: close distance between tip and base (same as thumbs up)
+    pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
+    
+    # Thumb extended down: tip and base apart, and tip below base (higher y)
+    thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
+    thumb_down = thumb_tip.y > thumb_base.y
+
+    index_extended = ((index_tip.x - index_base.x)**2 + (index_tip.y - index_base.y)**2)**0.5 > threshold
+
+    return pinky_curled and thumb_extended and thumb_down and index_extended
 
 cap = cv2.VideoCapture(0)
 
@@ -125,6 +144,7 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         thumbs_up_detected = False
         thumbs_down_detected = False
         backspace_detected = False
+        backspace_upsidedown_detected = False
 
         lm_left = None
         lm_right = None # Pre-initialize left and right hand landmarks
@@ -159,6 +179,9 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 if backspace(lm):
                     backspace_detected = True
 
+                if backspace_upsidedown(lm):
+                    backspace_upsidedown_detected = True
+
         if lm_left and lm_right:
             if index_mid_touch(lm_left, lm_right):
                 index_mid_touch_detected = True
@@ -174,6 +197,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
             display_text = "Number: add"
         elif backspace_detected:
             display_text = "Number: backspace"
+        elif backspace_upsidedown_detected:
+            display_text = "Number: backspace upsidedown"
         elif thumbs_up_detected:
             display_text = "Number: thumbs up"
         elif thumbs_down_detected:
