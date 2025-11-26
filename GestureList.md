@@ -30,3 +30,5 @@ clear: make a "C" with either hand
 Unused:<br>
 :white_check_mark: Thumbs Down
 
+:white_check_mark: Upside Down Backspace (Gun)
+
