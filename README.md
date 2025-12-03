@@ -173,6 +173,7 @@ Change UI text for current fingers to make it more visible <br>
 Change Current input to be cleaner <br>
 Finish slides <br>
 Make countdown more visible <br>
+Change text for ten fingers to "zero" not ten <br>
 prep for qna <br>
 
 # WANT
