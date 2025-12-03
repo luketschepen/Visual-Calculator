@@ -88,12 +88,9 @@ class Calculator:
             return self.result
         if self.result:
             return self.result
-        if self.current_input:
-            return self.current_input
-        if self.expression:
-            # Show last operator if waiting for next number
-            return self.last_op or "0"
-        return "0"
+        # Show the full expression being built
+        expr_str = "".join(self.expression) + self.current_input
+        return expr_str if expr_str else "0"
 
 
 # ==========================================
