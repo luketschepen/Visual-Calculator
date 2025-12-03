@@ -169,14 +169,14 @@ Draw the real-time calculator UI
 
 
 # TODO
-Change UI text for current fingers to make it more visible
-Change Current input to be cleaner
-Finish slides
-Make countdown more visible
-prep for qna
+Change UI text for current fingers to make it more visible <br>
+Change Current input to be cleaner <br>
+Finish slides <br>
+Make countdown more visible <br>
+prep for qna <br>
 
 # WANT
-Make it calculaterer
-backspace (gun)
-Library of gestures in UI
-integral 
+Make it calculaterer <br>
+backspace (gun) <br>
+Library of gestures in UI <br>
+integral <br>
