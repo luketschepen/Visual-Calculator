@@ -165,3 +165,16 @@ Add gesture classification
 Link gestures to calculator state machine
 
 Draw the real-time calculator UI
+
+
+
+# TODO
+Change UI text for current fingers to make it more visible
+Change Current input to be cleaner
+Finish slides
+prep for qna
+
+# WANT
+Make it calculater
+backspace (gun)
+integral 
