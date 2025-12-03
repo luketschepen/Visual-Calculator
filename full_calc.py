@@ -3,6 +3,7 @@ import mediapipe as mp
 import math
 import numpy as np
 import time
+import sympy as sp
 
 # ==========================================
 # 1. CALCULATOR BACKEND (LOGIC)
@@ -61,7 +62,9 @@ class Calculator:
 
         try:
             full_expr = "".join(self.expression)
-            val = eval(full_expr)
+            full_expr = full_expr.replace("^", "**")
+            symbolic_expr = sp.sympify(full_expr)
+            val = float(sp.N(symbolic_expr))  # Convert to numerical value
 
             # Pretty formatting
             if abs(val) > 99999999:
@@ -149,6 +152,7 @@ def draw_segment_display(img, text, x, y, scale=1.0):
         '*': ['g1','g2','h','i','j','k'],
         '/': ['i','k'],           
         '=': ['g1','g2','d'],
+        '^': ['a','b','f'],  # Added for exponent
         'E': ['a','f','g1','g2','e','d'],
         'R': ['a','f','b','g1','g2','e','j'],
         'O': ['a','b','c','d','e','f'],
@@ -206,6 +210,26 @@ def count_fingers(hand_landmarks, handedness):
         if hand_landmarks.landmark[tip].y < hand_landmarks.landmark[pip].y:
             fingers += 1
     return fingers
+
+def right_hand_modifier(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1):
+    pinky_tip = hand_landmarks.landmark[20]
+    palm_pinky_base = hand_landmarks.landmark[17]
+    thumb_tip = hand_landmarks.landmark[4]
+    thumb_base = hand_landmarks.landmark[2]
+
+    # Pinky curled: close distance between tip and base
+    pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
+    
+    # Thumb extended: tip and base apart
+    thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
+    
+    # Thumb sideways: tip y similar to base y (not up or down)
+    thumb_sideways = abs(thumb_tip.y - thumb_base.y) < 0.05  # Adjust threshold for sensitivity
+    
+    # Extra check: thumb tip and pinky tip not close
+    thumb_pinky_apart = ((thumb_tip.x - pinky_tip.x)**2 + (thumb_tip.y - pinky_tip.y)**2)**0.5 > 0.12
+    
+    return pinky_curled and thumb_extended and thumb_sideways and thumb_pinky_apart
 
 def is_pinch(hand_landmarks, threshold=0.06):
     thumb_tip = hand_landmarks.landmark[4]
@@ -340,6 +364,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
         backspace_upsidedown_detected = False
         slash_detected = False
 
+        right_mod_detected = False
+
         lm_left = None
         lm_right = None
 
@@ -378,6 +404,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 # Division: right-hand slash
                 if label == "Right" and is_slash(lm):
                     slash_detected = True
+                if label == "Right" and right_hand_modifier(lm):
+                    right_mod_detected = True
 
         if lm_left and lm_right:
             if index_mid_touch(lm_left, lm_right):
@@ -403,6 +431,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
             # Two-hand operators only, never backspace/equals/sub/div here
             if index_tip_touch_detected:
                 detected_action = "ADD"
+            elif pinch_detected and right_mod_detected:
+                detected_action = "EXP"
             elif index_mid_touch_detected:
                 detected_action = "MULT"
             else:
@@ -417,6 +447,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
             # One-hand commands
             if thumbs_down_detected or backspace_upsidedown_detected:
                 detected_action = "CLEAR"
+            elif right_mod_detected:
+                detected_action = "TEST"
             elif backspace_detected:
                 detected_action = "BACK"
             elif thumbs_up_detected:
@@ -485,6 +517,9 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                     elif detected_action == "BACK":
                         calc.backspace()
                         last_feedback = "Backspace"
+                    elif detected_action == "EXP":
+                        calc.input_op("^")
+                        last_feedback = "Operator EXP"
 
                     # Prevent re-triggering while holding the same gesture
                     current_stable_gesture = None
