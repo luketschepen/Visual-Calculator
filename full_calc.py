@@ -244,7 +244,8 @@ def thumbs_up(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1):
     pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
     thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
     thumb_up_flag = thumb_tip.y < thumb_base.y
-    return pinky_curled and thumb_extended and thumb_up_flag
+    thumb_pinky_apart = ((thumb_tip.x - pinky_tip.x)**2 + (thumb_tip.y - pinky_tip.y)**2)**0.5 > 0.12
+    return pinky_curled and thumb_extended and thumb_up_flag and thumb_pinky_apart
 
 def thumbs_down(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1):
     pinky_tip = hand_landmarks.landmark[20]
@@ -255,7 +256,8 @@ def thumbs_down(hand_landmarks, pinky_threshold=0.07, thumb_apart_threshold=0.1)
     pinky_curled = ((pinky_tip.x - palm_pinky_base.x)**2 + (pinky_tip.y - palm_pinky_base.y)**2)**0.5 < pinky_threshold
     thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
     thumb_down_flag = thumb_tip.y > thumb_base.y
-    return pinky_curled and thumb_extended and thumb_down_flag
+    thumb_pinky_apart = ((thumb_tip.x - pinky_tip.x)**2 + (thumb_tip.y - pinky_tip.y)**2)**0.5 > 0.12
+    return pinky_curled and thumb_extended and thumb_down_flag and thumb_pinky_apart
 
 def backspace(hand_landmarks,
               pinky_threshold=0.07,
