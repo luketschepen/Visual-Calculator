@@ -309,9 +309,9 @@ calc = Calculator()
 
 # Make the window resizable and set an initial size
 cv2.namedWindow("Visual Calculator", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Visual Calculator", 960, 720)  # or whatever you like
+cv2.resizeWindow("Visual Calculator", 1920, 1080)  # or whatever you like
 
-HOLD_DURATION = 3.0  # seconds for ANY input
+HOLD_DURATION = 2.0  # seconds for ANY input
 current_stable_gesture = None
 hold_start_time = 0.0
 last_feedback = "READY"
@@ -527,8 +527,13 @@ with mp_hands.Hands(max_num_hands=2) as hands:
 
         if detected_action:
             label_clean = detected_action.replace("NUM_", "Fingers: ")
-            cv2.putText(frame, f"Detecting: {label_clean}", (20, h - 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+            text = f"Detecting: {label_clean}"
+            text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, 0.7, 1)
+            # Draw white background rectangle with padding
+            cv2.rectangle(frame, (20 - 5, h - 30 - text_size[1] - 5), 
+                          (20 + text_size[0] + 5, h - 30 + 5), (255, 255, 255), -1)
+            cv2.putText(frame, text, (20, h - 30),
+                        cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 0, 0), 1)
 
             # Progress bar
             if 0.0 < progress < 1.0:
