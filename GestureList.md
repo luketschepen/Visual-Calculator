@@ -12,26 +12,27 @@
 0: all 10 fingers<br>
 
 ### Operators:<br>
-:white_check_mark: addition: touch index finger tips together 
+Addition: touch index finger tips together 
 
-:white_check_mark: multiplication: cross symbol with index fingers
+Multiplication: cross symbol with index fingers
 
-:white_check_mark: subtraction: pinch gesture/ ok symbol
+Subtraction: pinch gesture/ ok symbol
 
-division: "slash" made with either hand
+Division: "slash" made with right hand
 
-:white_check_mark: equals: thumbs up either hand
+Equals: thumbs up either hand
 
-:white_check_mark: backspace: gun symbol with either hand
+Make next num negative: form a 'zero' with all your fingers
 
-:white_check_mark: clear: thumbs down
+Backspace: gun symbol with either hand
 
-:white_check_mark: 2nd (2nd gesture layer): Sideways thumb
+Clear: thumbs down
 
-✅Exponent ^: 2nd + pinch
+2nd (2nd gesture layer): Sideways thumb
+
+Exponent ^: 2nd + pinch
 
 Unused:<br>
-:white_check_mark: Thumbs Down
 
 :white_check_mark: Upside Down Backspace (Gun)
 
