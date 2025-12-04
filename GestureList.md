@@ -18,7 +18,7 @@ Multiplication: cross symbol with index fingers
 
 Subtraction: pinch gesture/ ok symbol
 
-Division: "slash" made with either hand
+Division: "slash" made with right hand
 
 Equals: thumbs up either hand
 
@@ -33,7 +33,6 @@ Clear: thumbs down
 Exponent ^: 2nd + pinch
 
 Unused:<br>
-:white_check_mark: Thumbs Down
 
 :white_check_mark: Upside Down Backspace (Gun)
 
