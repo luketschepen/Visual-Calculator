@@ -24,6 +24,8 @@ Equals: thumbs up either hand
 
 Make next num negative: form a 'zero' with all your fingers
 
+Decimal: 2nd + zero
+
 Backspace: gun symbol with either hand
 
 Clear: thumbs down
