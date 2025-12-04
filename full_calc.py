@@ -18,6 +18,7 @@ class Calculator:
         self.result = ""
         self.last_op = ""
         self.error = False
+        self.negative_next = False
 
     def input_digit(self, digit):
         # digit is a string '0'..'9'
@@ -27,7 +28,11 @@ class Calculator:
         if len(self.current_input) < 10:
             if digit == '0' and self.current_input == '0':
                 return
-            self.current_input += digit
+            if self.negative_next:
+                self.current_input += 'n' + digit  # Use 'n' for negative sign
+                self.negative_next = False
+            else:
+                self.current_input += digit
 
     def input_op(self, op):
         # If we have a result, use it as the start of new math
@@ -63,6 +68,7 @@ class Calculator:
         try:
             full_expr = "".join(self.expression)
             full_expr = full_expr.replace("^", "**")
+            full_expr = full_expr.replace("n", "-")
             symbolic_expr = sp.sympify(full_expr)
             val = float(sp.N(symbolic_expr))  # Convert to numerical value
 
@@ -134,6 +140,7 @@ def draw_segment_display(img, text, x, y, scale=1.0):
             'i':  ((sx + w/2 + slant/2,sy + h/2),   (sx + w,               sy)),
             'j':  ((sx + w/2 + slant/2,sy + h/2),   (sx + w,               sy + h)),
             'k':  ((sx + w/2 + slant/2,sy + h/2),   (sx,                   sy + h)),
+            'dp': (sx + 5, sy + h + 5),
         }
 
     charmap = {
@@ -153,6 +160,8 @@ def draw_segment_display(img, text, x, y, scale=1.0):
         '/': ['i','k'],           
         '=': ['g1','g2','d'],
         '^': ['a','b','f'],  # Added for exponent
+        'n': ['g2'],
+        '.': ['dp'],
         'E': ['a','f','g1','g2','e','d'],
         'R': ['a','f','b','g1','g2','e','j'],
         'O': ['a','b','c','d','e','f'],
@@ -162,7 +171,7 @@ def draw_segment_display(img, text, x, y, scale=1.0):
     start_text_x = x + 20
     start_text_y = y + 20
 
-    all_keys = ['a','b','c','d','e','f','g1','g2','m','h','i','j','k']
+    all_keys = ['a','b','c','d','e','f','g1','g2','m','h','i','j','k','dp']
 
     for i, ch in enumerate(text):
         cx = start_text_x + i * (char_w + spacing)
@@ -170,21 +179,30 @@ def draw_segment_display(img, text, x, y, scale=1.0):
 
         # Ghost segments
         for k in all_keys:
-            p1, p2 = segs[k]
-            cv2.line(img, (int(p1[0]), int(p1[1])),
-                          (int(p2[0]), int(p2[1])),
-                          (40, 45, 45), thickness, cv2.LINE_AA)
+            if k == 'dp':
+                cx_dot, cy_dot = segs[k]
+                cv2.circle(img, (int(cx_dot), int(cy_dot)), 3, COLOR_OFF, -1, cv2.LINE_AA)
+            else:
+                p1, p2 = segs[k]
+                cv2.line(img, (int(p1[0]), int(p1[1])),
+                              (int(p2[0]), int(p2[1])),
+                              COLOR_OFF, thickness, cv2.LINE_AA)
 
         # Active segments
         active = charmap.get(ch, [])
         for k in active:
-            p1, p2 = segs[k]
-            cv2.line(img, (int(p1[0]), int(p1[1])),
-                          (int(p2[0]), int(p2[1])),
-                          (0, 100, 100), thickness + 4, cv2.LINE_AA)
-            cv2.line(img, (int(p1[0]), int(p1[1])),
-                          (int(p2[0]), int(p2[1])),
-                          (0, 255, 255), thickness, cv2.LINE_AA)
+            if k == 'dp':
+                cx_dot, cy_dot = segs[k]
+                cv2.circle(img, (int(cx_dot), int(cy_dot)), 3, COLOR_GLOW, -1, cv2.LINE_AA)
+                cv2.circle(img, (int(cx_dot), int(cy_dot)), 3, COLOR_ON, 1, cv2.LINE_AA)
+            else:
+                p1, p2 = segs[k]
+                cv2.line(img, (int(p1[0]), int(p1[1])),
+                              (int(p2[0]), int(p2[1])),
+                              COLOR_GLOW, thickness + 4, cv2.LINE_AA)
+                cv2.line(img, (int(p1[0]), int(p1[1])),
+                              (int(p2[0]), int(p2[1])),
+                              COLOR_ON, thickness, cv2.LINE_AA)
 
 
 # ==========================================
@@ -453,6 +471,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                 detected_action = "BACK"
             elif thumbs_up_detected:
                 detected_action = "EQUAL"
+            elif zero_detected:
+                detected_action = "NEGATIVE"
             elif pinch_detected:
                 detected_action = "SUB"
             elif slash_detected:
@@ -520,6 +540,9 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                     elif detected_action == "EXP":
                         calc.input_op("^")
                         last_feedback = "Operator EXP"
+                    elif detected_action == "NEGATIVE":
+                        calc.negative_next = True
+                        last_feedback = "Next digit negative"
 
                     # Prevent re-triggering while holding the same gesture
                     current_stable_gesture = None
