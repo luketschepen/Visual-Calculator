@@ -242,10 +242,13 @@ def right_hand_modifier(hand_landmarks, pinky_threshold=0.07, thumb_apart_thresh
     thumb_extended = ((thumb_tip.x - thumb_base.x)**2 + (thumb_tip.y - thumb_base.y)**2)**0.5 > thumb_apart_threshold
     
     # Thumb sideways: tip y similar to base y (not up or down)
-    thumb_sideways = abs(thumb_tip.y - thumb_base.y) < 0.05  # Adjust threshold for sensitivity
+    dx = thumb_tip.x - thumb_base.x
+    dy = thumb_tip.y - thumb_base.y
+    angle = abs(math.degrees(math.atan2(dy, dx)))
+    thumb_sideways = angle < 45 or angle > 135  # Horizontal (left/right)
     
     # Extra check: thumb tip and pinky tip not close
-    thumb_pinky_apart = ((thumb_tip.x - pinky_tip.x)**2 + (thumb_tip.y - pinky_tip.y)**2)**0.5 > 0.12
+    thumb_pinky_apart = ((thumb_tip.x - pinky_tip.x)**2 + (thumb_tip.y - pinky_tip.y)**2)**0.5 > 0.10
     
     return pinky_curled and thumb_extended and thumb_sideways and thumb_pinky_apart
 
@@ -449,6 +452,8 @@ with mp_hands.Hands(max_num_hands=2) as hands:
             # Two-hand operators only, never backspace/equals/sub/div here
             if index_tip_touch_detected:
                 detected_action = "ADD"
+            elif zero_detected and right_mod_detected:
+                detected_action = "DECIMAL"
             elif pinch_detected and right_mod_detected:
                 detected_action = "EXP"
             elif index_mid_touch_detected:
@@ -543,6 +548,9 @@ with mp_hands.Hands(max_num_hands=2) as hands:
                     elif detected_action == "NEGATIVE":
                         calc.negative_next = True
                         last_feedback = "Next digit negative"
+                    elif detected_action == "DECIMAL":
+                        calc.input_digit('.')
+                        last_feedback = "Decimal point"
 
                     # Prevent re-triggering while holding the same gesture
                     current_stable_gesture = None
